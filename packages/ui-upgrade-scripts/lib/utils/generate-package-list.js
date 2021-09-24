@@ -28,16 +28,27 @@ const { info, error, runCommandSync } = require('@instructure/command-utils')
 
 module.exports = ({ outputDir, name = 'package-list.json' }) => {
   try {
-    const { stdout } = runCommandSync('lerna', ['list', '--json'], [], {
-      stdio: 'pipe'
+    // This Prolog black magic was made by a Yarn developer:
+    // yarn constraints query "workspace(Cwd), \+ workspace_field(Cwd, 'private', true), workspace_ident(Cwd, Ident)" --json
+    const result = runCommandSync(
+      'yarn',
+      [
+        'constraints',
+        'query',
+        "workspace(Cwd), \\+ workspace_field(Cwd, 'private', true), workspace_ident(Cwd, Ident)",
+        '--json'
+      ],
+      [],
+      {
+        stdio: 'pipe'
+      }
+    )
+    const resultArr = result.stdout.split(/\r?\n/)
+    const packageList = resultArr.map((jsonString) => {
+      return JSON.parse(jsonString).Ident
     })
-    const packages = JSON.parse(stdout)
-    const packageList = packages.map((pkg) => pkg.name)
-
     const outputPath = path.join(outputDir, name)
-
     fse.outputFileSync(outputPath, JSON.stringify(packageList, null, 1))
-
     info(`Successfully generated package list at ${outputPath}`)
   } catch (err) {
     error(err)
