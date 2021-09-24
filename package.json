@@ -13,10 +13,6 @@
   "workspaces": {
     "packages": [
       "packages/*"
-    ],
-    "nohoist": [
-      "**/acorn",
-      "**/acorn/**"
     ]
   },
   "scripts": {
@@ -43,17 +39,16 @@
     "generate:package": "instui create package",
     "commit": "ui-scripts --commit",
     "install:react": "ui-scripts --install-react",
-    "install:packages": "lerna bootstrap --reject-cycles",
-    "bootstrap": "npm-run-all clean:modules install:packages clean build build:tokens build:types",
-    "bootstrap:docs": "npm-run-all clean:modules install:packages clean build",
-    "build": "lerna run build --stream",
+    "bootstrap": "npm-run-all clean:modules clean build build:tokens build:types",
+    "bootstrap:docs": "npm-run-all clean:modules clean build",
+    "build": "yarn workspaces foreach run build",
     "build:watch": "lerna run build:watch --stream",
     "build:docs": "lerna run bundle --stream --scope docs-app",
     "build:types": "lerna run build:types --stream",
     "build:tokens": "ui-token-scripts generate-all-tokens",
     "build:ts": "yarn build && yarn build:types",
     "build:node-scripts": "lerna run build --scope @instructure/ui-scripts --include-dependencies",
-    "clean": "lerna run clean --stream",
+    "clean": "yarn workspaces foreach run clean",
     "clean:modules": "lerna clean --yes",
     "export:icons": "lerna run export --stream --scope @instructure/ui-icons",
     "bump": "ui-scripts --bump",
@@ -68,7 +63,7 @@
     "build-storybook": "lerna run bundle --stream --scope docs-examples",
     "prepare": "husky install",
     "ts:check": "lerna run ts:check --stream",
-    "postinstall": "yarn build:node-scripts"
+    "postinstall": "yarn build:node-scripts && husky install"
   },
   "license": "MIT",
   "resolutions": {
@@ -80,18 +75,18 @@
     "@typescript-eslint/eslint-plugin": "^4.22.0",
     "@typescript-eslint/parser": "^4.22.0",
     "eslint": "^7",
-    "husky": "^6.0.0",
+    "husky": "^7",
     "lerna": "^4",
     "lint-staged": "^10",
     "netlify-cli": "^4.0.1",
     "npm-run-all": "^4.1.5",
     "ts-migrate": "^0.1.16",
     "typescript": "4.2.4",
-    "yarn": "^1.22.11"
+    "yarn": "^2"
   },
   "engines": {
     "node": ">=12.20",
-    "yarn": ">=1.6.0"
+    "yarn": ">=2"
   },
   "config": {
     "ui-scripts": {
