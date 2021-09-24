@@ -25,9 +25,24 @@ const { runCommandSync } = require('@instructure/command-utils')
 const { getPackage } = require('./get-package')
 
 module.exports = function getPackages() {
-  const result = runCommandSync('lerna', ['list', '--json'], [], {
-    stdio: 'pipe'
-  }).stdout
-  const packageData = JSON.parse(result)
-  return packageData.map(({ location }) => getPackage({ cwd: location }))
+  // This Prolog black magic was made by a Yarn developer:
+  // yarn constraints query "workspace(Cwd), \+ workspace_field(Cwd, 'private', true), workspace_ident(Cwd, Ident)" --json
+  const result = runCommandSync(
+    'yarn',
+    [
+      'constraints',
+      'query',
+      "workspace(Cwd), \\+ workspace_field(Cwd, 'private', true), workspace_ident(Cwd, Ident)",
+      '--json'
+    ],
+    [],
+    {
+      stdio: 'pipe'
+    }
+  )
+  const resultArr = result.stdout.split(/\r?\n/)
+  const packageData = resultArr.map((jsonString) => {
+    return JSON.parse(jsonString).Cwd
+  })
+  return packageData.map((location) => getPackage({ cwd: location }))
 }
