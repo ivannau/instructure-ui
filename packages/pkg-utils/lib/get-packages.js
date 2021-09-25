@@ -23,6 +23,8 @@
  */
 const { runCommandSync } = require('@instructure/command-utils')
 const { getPackage } = require('./get-package')
+const readPkgUp = require('read-pkg-up')
+const path = require('path')
 
 module.exports = function getPackages() {
   // This Prolog black magic was made by a Yarn developer:
@@ -44,5 +46,25 @@ module.exports = function getPackages() {
   const packageData = resultArr.map((jsonString) => {
     return JSON.parse(jsonString).Cwd
   })
-  return packageData.map((location) => getPackage({ cwd: location }))
+  const rootPath = path.dirname(findRootPackagePath())
+  return packageData.map((location) =>
+    getPackage({ cwd: path.join(rootPath, location) })
+  )
+}
+
+// returns the root package.json
+function findRootPackagePath() {
+  let rootPackage
+  const parentPackage = readPkgUp.sync({ cwd: '..' })
+  if (parentPackage) {
+    rootPackage = parentPackage
+  } else {
+    rootPackage = readPkgUp.sync()
+  }
+  if (rootPackage.packageJson.name !== 'instructure-ui') {
+    throw new Error(
+      'could not find root package. Found only ' + rootPackage.packageJson.name
+    )
+  }
+  return rootPackage.path
 }

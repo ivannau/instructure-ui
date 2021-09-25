@@ -24,9 +24,6 @@
     "inquirer": "^8",
     "inquirer-autocomplete-prompt": "^1.0.1"
   },
-  "peerDependencies": {
-    "lerna": "^4"
-  },
   "publishConfig": {
     "access": "public"
   }

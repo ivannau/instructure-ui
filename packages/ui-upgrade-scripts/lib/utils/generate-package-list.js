@@ -24,28 +24,14 @@
 
 const fse = require('fs-extra')
 const path = require('path')
-const { info, error, runCommandSync } = require('@instructure/command-utils')
+const { info, error } = require('@instructure/command-utils')
+const { getPackages } = require('@instructure/pkg-utils')
 
 module.exports = ({ outputDir, name = 'package-list.json' }) => {
   try {
-    // This Prolog black magic was made by a Yarn developer:
-    // yarn constraints query "workspace(Cwd), \+ workspace_field(Cwd, 'private', true), workspace_ident(Cwd, Ident)" --json
-    const result = runCommandSync(
-      'yarn',
-      [
-        'constraints',
-        'query',
-        "workspace(Cwd), \\+ workspace_field(Cwd, 'private', true), workspace_ident(Cwd, Ident)",
-        '--json'
-      ],
-      [],
-      {
-        stdio: 'pipe'
-      }
-    )
-    const resultArr = result.stdout.split(/\r?\n/)
-    const packageList = resultArr.map((jsonString) => {
-      return JSON.parse(jsonString).Ident
+    const packages = getPackages()
+    const packageList = packages.map((packages) => {
+      return packages.name // package name
     })
     const outputPath = path.join(outputDir, name)
     fse.outputFileSync(outputPath, JSON.stringify(packageList, null, 1))

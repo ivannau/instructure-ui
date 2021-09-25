@@ -2205,8 +2205,6 @@ __metadata:
     cz-customizable: ^6.2.0
     inquirer: ^8
     inquirer-autocomplete-prompt: ^1.0.1
-  peerDependencies:
-    lerna: ^4
   languageName: unknown
   linkType: soft
 

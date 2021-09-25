@@ -58,7 +58,7 @@
     "prestart-examples": "yarn bootstrap",
     "start-examples": "yarn workspace docs-examples run start",
     "generate-sketch": "yarn workspace docs-examples run generate-sketch",
-    "husky:pre-commit": "npm-run-all update-package-list commit-package-list lint-staged",
+    "husky-pre-commit": "npm-run-all update-package-list commit-package-list lint-staged",
     "husky:pre-push": "yarn lint-commit",
     "build-storybook": "yarn workspace docs-examples run bundle",
     "prepare": "husky install",
