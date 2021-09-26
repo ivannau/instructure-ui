@@ -26,13 +26,14 @@ import path from 'path'
 import semver from 'semver'
 import { getPackage, getChangedPackages } from '@instructure/pkg-utils'
 import {
-  runCommandAsync,
+  //runCommandAsync,
   runCommandSync,
   error,
   info
 } from '@instructure/command-utils'
 //@ts-expect-error FIXME: add typings
 import { Project } from '@lerna/project'
+import standardVersion from 'standard-version'
 
 export const publishPackages = async (
   packageName: string,
@@ -130,6 +131,7 @@ export async function bumpPackages(packageName: string, requestedVersion: any) {
   let releaseVersion
 
   try {
+    /*
     await runCommandAsync('lerna', [
       'version',
       ...args,
@@ -142,7 +144,12 @@ export async function bumpPackages(packageName: string, requestedVersion: any) {
     ])
 
     releaseVersion = await syncRootPackageVersion(true)
-
+*/
+    //console.log("cwd:",process.cwd())
+    await standardVersion({
+      dryRun: true,
+      bumpFiles: ['package.json', 'packages/ui-i18n/package.json']
+    })
     info(`📦  Done bumping ${packageName} to ${releaseVersion}!`)
   } catch (err) {
     error(err)
